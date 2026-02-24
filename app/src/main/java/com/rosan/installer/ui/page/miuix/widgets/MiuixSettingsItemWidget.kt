@@ -64,8 +64,8 @@ import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.extra.SuperArrow
-import top.yukonga.miuix.kmp.extra.SuperDialog
 import top.yukonga.miuix.kmp.extra.SuperSpinner
+import top.yukonga.miuix.kmp.extra.WindowDialog
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 data class AuthorizerInfo(
@@ -628,7 +628,7 @@ private fun MiuixAddPackageDialog(
     val isConfirmEnabled = name.isNotBlank() && packageName.isNotBlank()
     val showState = remember { mutableStateOf(true) }
 
-    SuperDialog(
+    WindowDialog(
         show = showState,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.config_add_new_package),
@@ -689,7 +689,7 @@ private fun MiuixDeleteNamedPackageConfirmationDialog(
 ) {
     val showState = remember { mutableStateOf(true) }
 
-    SuperDialog(
+    WindowDialog(
         show = showState,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.config_confirm_deletion),
@@ -847,7 +847,7 @@ private fun MiuixAddUidDialog(
     // Confirm button is enabled if both name and value are not blank and value is a valid integer.
     val isConfirmEnabled = uidName.isNotBlank() && uidValueString.toIntOrNull() != null
 
-    SuperDialog(
+    WindowDialog(
         show = showState,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.config_add_new_shared_uid),
@@ -912,7 +912,7 @@ private fun MiuixDeleteSharedUidConfirmationDialog(
 ) {
     val showState = remember { mutableStateOf(true) }
 
-    SuperDialog(
+    WindowDialog(
         show = showState,
         onDismissRequest = onDismiss,
         title = stringResource(R.string.config_confirm_deletion),
