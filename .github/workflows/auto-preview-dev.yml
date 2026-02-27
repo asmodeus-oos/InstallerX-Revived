@@ -109,13 +109,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew assembleOnlineUnstableRelease assembleOfflineUnstableRelease -PVERSION_NAME="${{ env.NEW_VERSION }}"
 
-      - name: Upload APK as Artifact
+      # Upload the online variant unzipped APK
+      - name: Upload Online APK
         uses: actions/upload-artifact@v7
         with:
-          name: dev-apk-${{ steps.commit_sha.outputs.SHORT_SHA }}
-          path: |
-            app/build/outputs/apk/onlineUnstable/release/*.apk
-            app/build/outputs/apk/offlineUnstable/release/*.apk
+          name: dev-online-apk-${{ steps.commit_sha.outputs.SHORT_SHA }}
+          path: app/build/outputs/apk/onlineUnstable/release/*.apk
           retention-days: 15
-          # Disable archiving to upload unzipped artifacts directly
+          archive: false
+
+      # Upload the offline variant unzipped APK
+      - name: Upload Offline APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: dev-offline-apk-${{ steps.commit_sha.outputs.SHORT_SHA }}
+          path: app/build/outputs/apk/offlineUnstable/release/*.apk
+          retention-days: 15
           archive: false
