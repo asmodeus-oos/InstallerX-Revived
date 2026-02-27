@@ -117,3 +117,5 @@ jobs:
             app/build/outputs/apk/onlineUnstable/release/*.apk
             app/build/outputs/apk/offlineUnstable/release/*.apk
           retention-days: 15
+          # Disable archiving to upload unzipped artifacts directly
+          archive: false
