@@ -23,6 +23,7 @@ class AppDataStore(
         val UI_EXPRESSIVE_SWITCH = booleanPreferencesKey("ui_fresh_switch")
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val THEME_PALETTE_STYLE = stringPreferencesKey("theme_palette_style")
+        val THEME_COLOR_SPEC = stringPreferencesKey("theme_color_spec")
         val THEME_USE_DYNAMIC_COLOR = booleanPreferencesKey("theme_use_dynamic_color")
         val THEME_SEED_COLOR = intPreferencesKey("theme_seed_color")
         val UI_USE_MIUIX = booleanPreferencesKey("ui_use_miui_x")

@@ -119,8 +119,9 @@ fun InstallPrepareContent(
             !isModuleSelected
     val isSplitUpdateMode = (isBundleSplitUpdate || isPureSplit) && currentPackage.installedAppInfo != null
 
+    val primaryColor = MiuixTheme.colorScheme.primary
     val errorColor = MaterialTheme.colorScheme.error
-    val tertiaryColor = MiuixTheme.colorScheme.primary
+
     val tagDowngrade = stringResource(R.string.tag_downgrade)
     val downgradeWarning = stringResource(R.string.installer_prepare_type_downgrade)
     val tagSignature = stringResource(R.string.tag_signature)
@@ -132,8 +133,10 @@ fun InstallPrepareContent(
     val textArch32 = stringResource(R.string.installer_prepare_arch_32_notice)
     val tagEmulated = stringResource(R.string.tag_arch_emulated)
     val textArchMismatch = stringResource(R.string.installer_prepare_arch_mismatch_notice)
+    val tagIdentical = stringResource(R.string.tag_identical)
+    val textIdentical = stringResource(R.string.installer_prepare_identical_notice)
 
-    val installResources = remember(errorColor, tertiaryColor) {
+    val installResources = remember(errorColor, primaryColor) {
         InstallWarningResources(
             tagDowngrade = tagDowngrade,
             textDowngrade = downgradeWarning,
@@ -146,8 +149,11 @@ fun InstallPrepareContent(
             textArch32 = textArch32,
             tagEmulated = tagEmulated,
             textArchMismatchFormat = textArchMismatch,
+            tagIdentical = tagIdentical,
+            textIdentical = textIdentical,
             errorColor = errorColor,
-            tertiaryColor = tertiaryColor
+            tertiaryColor = primaryColor,
+            primaryColor = primaryColor
         )
     }
 

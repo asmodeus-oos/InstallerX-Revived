@@ -35,10 +35,11 @@ import com.rosan.installer.data.settings.model.room.entity.converter.InstallMode
 import com.rosan.installer.data.updater.repo.AppUpdater
 import com.rosan.installer.data.updater.repo.UpdateChecker
 import com.rosan.installer.ui.activity.InstallerActivity
-import com.rosan.installer.ui.theme.m3color.PaletteStyle
-import com.rosan.installer.ui.theme.m3color.PresetColors
-import com.rosan.installer.ui.theme.m3color.RawColor
-import com.rosan.installer.ui.theme.m3color.ThemeMode
+import com.rosan.installer.ui.theme.material.PaletteStyle
+import com.rosan.installer.ui.theme.material.PresetColors
+import com.rosan.installer.ui.theme.material.RawColor
+import com.rosan.installer.ui.theme.material.ThemeColorSpec
+import com.rosan.installer.ui.theme.material.ThemeMode
 import com.rosan.installer.ui.util.doBiometricAuth
 import com.rosan.installer.util.addFlag
 import com.rosan.installer.util.removeFlag
@@ -179,6 +180,7 @@ class PreferredViewModel(
 
             is PreferredViewAction.SetThemeMode -> setThemeMode(action.mode)
             is PreferredViewAction.SetPaletteStyle -> setPaletteStyle(action.style)
+            is PreferredViewAction.SetColorSpec -> setColorSpec(action.spec)
             is PreferredViewAction.SetUseDynamicColor -> setUseDynamicColor(action.use)
             is PreferredViewAction.SetUseMiuixMonet -> setUseMiuixMonet(action.use)
             is PreferredViewAction.SetSeedColor -> setSeedColor(action.color)
@@ -609,6 +611,10 @@ class PreferredViewModel(
         appDataStore.putString(AppDataStore.THEME_PALETTE_STYLE, style.name)
     }
 
+    private fun setColorSpec(spec: ThemeColorSpec) = viewModelScope.launch {
+        appDataStore.putString(AppDataStore.THEME_COLOR_SPEC, spec.name)
+    }
+
     private fun setUseDynamicColor(use: Boolean) = viewModelScope.launch {
         appDataStore.putBoolean(AppDataStore.THEME_USE_DYNAMIC_COLOR, use)
     }
@@ -764,6 +770,8 @@ class PreferredViewModel(
             val paletteStyleFlow =
                 appDataStore.getString(AppDataStore.THEME_PALETTE_STYLE, PaletteStyle.TonalSpot.name)
                     .map { runCatching { PaletteStyle.valueOf(it) }.getOrDefault(PaletteStyle.TonalSpot) }
+            val colorSpecFlow = appDataStore.getString(AppDataStore.THEME_COLOR_SPEC, ThemeColorSpec.SPEC_2025.name)
+                .map { runCatching { ThemeColorSpec.valueOf(it) }.getOrDefault(ThemeColorSpec.SPEC_2025) }
             val useDynamicColorFlow =
                 appDataStore.getBoolean(AppDataStore.THEME_USE_DYNAMIC_COLOR, true)
             val useMiuixMonetFlow =
@@ -819,6 +827,7 @@ class PreferredViewModel(
                 enableFileLoggingFlow,
                 themeModeFlow,
                 paletteStyleFlow,
+                colorSpecFlow,
                 useDynamicColorFlow,
                 useMiuixMonetFlow,
                 seedColorFlow,
@@ -872,6 +881,7 @@ class PreferredViewModel(
                 val enableFileLogging = values[idx++] as Boolean
                 val themeMode = values[idx++] as ThemeMode
                 val paletteStyle = values[idx++] as PaletteStyle
+                val colorSpec = values[idx++] as ThemeColorSpec
                 val useDynamicColor = values[idx++] as Boolean
                 val useMiuixMonet = values[idx++] as Boolean
                 val manualSeedColor = values[idx++] as Color
@@ -946,6 +956,7 @@ class PreferredViewModel(
                     labSetInstallRequester = labSetInstallRequester,
                     themeMode = themeMode,
                     paletteStyle = paletteStyle,
+                    colorSpec = colorSpec,
                     useDynamicColor = useDynamicColor,
                     useMiuixMonet = useMiuixMonet,
                     seedColor = effectiveSeedColor,

@@ -75,6 +75,8 @@
     <string name="theme_settings_theme_mode_system">Follow system theme</string>
     <string name="theme_settings_palette_style">Palette Style</string>
     <string name="theme_settings_palette_style_desc">Select palette style</string>
+    <string name="theme_settings_color_spec">Color Spec</string>
+    <string name="theme_settings_color_spec_only_2021">Current palette style only supports Spec 2021</string>
     <string name="theme_settings_dynamic_color">Dynamic Color</string>
     <string name="theme_settings_dynamic_color_desc">Theme color based on wallpaper</string>
     <string name="theme_settings_theme_color">Theme Color</string>
@@ -243,6 +245,7 @@
     <string name="config_label_install_options">Install Options</string>
     <string name="config_label_install_options_desc">Configure installation parameters such as source, user</string>
     <string name="config_label_app_bundle_settings">Split APK Packages</string>
+    <string name="config_label_preferences">Preferences</string>
     <string name="config_dialog_title_invalid">Invalid Input</string>
     <string name="config_dialog_title_unsaved_changes">Unsaved changes</string>
     <string name="config_dialog_message_unsaved_changes">Quit without saving?</string>
@@ -321,6 +324,7 @@
     <string name="installer_preparing_desc">Preparing files, please wait…</string>
     <string name="installer_analysing">Analysing…</string>
     <string name="installer_analyse_failed">Analyse failed</string>
+    <string name="installer_analyse_failed_corrupted_archive">Corrupted archive</string>
     <string name="installer_analyse_success">Analyse success</string>
     <string name="installer_select_install">Select apps to install</string>
     <string name="installer_select_split">Select APK splits</string>
@@ -339,6 +343,8 @@
     <string name="tag_arch_emulated">Arch Emulated</string>
     <string name="installer_prepare_arch_32_notice">This app will run in 32-bit mode. This may increase memory usage or reduce performance on 64-bit devices</string>
     <string name="installer_prepare_arch_mismatch_notice">The app architecture (%1$s) does not match your device (%2$s). It will run via translation. Installation or execution is not guaranteed, and issues like overheating or crashes may occur</string>
+    <string name="tag_identical">Identical</string>
+    <string name="installer_prepare_identical_notice">This package is identical to the installed app. You can safely skip this installation.</string>
     <string name="installer_prepare_sdk_incompatible">System SDK lower than app requires</string>
     <string name="installer_prepare_type_new_install">Preparing to install new app</string>
     <string name="installer_prepare_type_upgrade">Preparing to upgrade app</string>
@@ -483,7 +489,7 @@
     <string name="exception_authentication_failed">User authentication failed</string>
     <string name="exception_install_failed_already_exists">This app version is already installed, please uninstall and try again</string>
     <string name="exception_install_failed_blacklisted_package">You don\'t allow installation of the app!</string>
-    <string name="exception_install_failed_invalid_apk">This app version is already installed, please uninstall and try again</string>
+    <string name="exception_install_failed_invalid_apk">Invalid APK (package corrupted). Please redownload and try again</string>
     <string name="exception_install_failed_invalid_uri">Invalid URI</string>
     <string name="exception_install_failed_insufficient_storage">Storage full, try clearing some space</string>
     <string name="exception_install_failed_duplicate_package">Package signature changed, ensure your package is safe and uninstall the application, then try again</string>
@@ -591,6 +597,8 @@
     <string name="config_grant_all_permissions_desc">Automatically grant all permissions the package is requesting. Note that this only applies to runtime permissions. Special permissions like All Files Access or Accessibility won\'t be automatically granted</string>
     <string name="config_split_choose_all">Select all splits by default</string>
     <string name="config_split_choose_all_desc">Select all splits by default instead of selecting best suitable</string>
+    <string name="config_apk_choose_all">Select all APKs by default during batch install</string>
+    <string name="config_apk_choose_all_desc">Select all APKs by default for multiple-file sessions.</string>
     <string name="force_volume_uuid">Force Volume UUID</string>
     <string name="force_volume_uuid_desc">Allows specifying a volume UUID to install the package to</string>
     <string name="force_permission_prompt">Force Permission Prompt</string>

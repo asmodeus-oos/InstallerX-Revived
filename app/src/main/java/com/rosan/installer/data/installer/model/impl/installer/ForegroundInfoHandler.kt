@@ -129,12 +129,23 @@ class ForegroundInfoHandler(scope: CoroutineScope, installer: InstallerRepo) :
             }
         }
 
+        // Determine if fake progress animation is actually required (only for Modern Live Activity)
+        val isModernEligible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+        val requiresAnimation = isModernEligible && settings.showLiveActivity
+
         job = scope.launch {
             combine(installer.progress, installer.background, ticker) { progress, background, tick ->
                 NotificationState(progress, background, tick)
             }.distinctUntilChanged { old, new ->
                 if (old.progress != new.progress || old.background != new.background) return@distinctUntilChanged false
-                return@distinctUntilChanged !(new.progress is ProgressEntity.Installing && new.background)
+
+                // Penetrate the distinct barrier only if Live Activity animation is actively required
+                if (requiresAnimation) {
+                    return@distinctUntilChanged !(new.progress is ProgressEntity.Installing && new.background)
+                }
+
+                // Block ticker emissions if progress and background haven't changed
+                return@distinctUntilChanged true
             }.collect { state ->
                 val progress = state.progress
                 val background = state.background
@@ -223,7 +234,12 @@ class ForegroundInfoHandler(scope: CoroutineScope, installer: InstallerRepo) :
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    private suspend fun setNotificationThrottled(notification: Notification?, progress: ProgressEntity, isMiIsland: Boolean) {
+    private fun setNotificationThrottled(
+        notification: Notification?,
+        progress: ProgressEntity,
+        isMiIsland: Boolean,
+        requiresAnimation: Boolean = false
+    ) {
         if (notification == null) {
             setNotificationImmediate(null)
             lastProgressValue = -1f
@@ -236,9 +252,13 @@ class ForegroundInfoHandler(scope: CoroutineScope, installer: InstallerRepo) :
 
         val currentTime = System.currentTimeMillis()
         val timeSinceLastUpdate = currentTime - lastNotificationUpdateTime
+
         val isCriticalState =
             progress is ProgressEntity.InstallSuccess || progress is ProgressEntity.InstallFailed || progress is ProgressEntity.InstallCompleted || progress is ProgressEntity.InstallAnalysedSuccess || progress is ProgressEntity.InstallResolvedFailed || progress is ProgressEntity.InstallAnalysedFailed
         val isEnteringInstalling = progress is ProgressEntity.Installing && lastProgressClass != ProgressEntity.Installing::class
+
+        // Check if the actual data inside the entity has changed (e.g., current, total, appLabel)
+        val isDataChanged = progress != lastNotifiedEntity
 
         if (progress is ProgressEntity.InstallingModule) {
             val currentLine = progress.output.lastOrNull()
@@ -251,11 +271,20 @@ class ForegroundInfoHandler(scope: CoroutineScope, installer: InstallerRepo) :
         }
 
         val currentProgress = (progress as? ProgressEntity.InstallPreparing)?.progress ?: -1f
+
         val shouldUpdate = when {
-            isCriticalState -> progress != lastNotifiedEntity
+            isCriticalState -> isDataChanged
             isEnteringInstalling -> true
+
+            // Unconditionally update if Installing data (e.g., batch index or label) changes
+            progress is ProgressEntity.Installing && isDataChanged -> true
+
+            // Throttle updates faster than 500ms
             timeSinceLastUpdate < NOTIFICATION_UPDATE_INTERVAL_MS -> false
-            progress is ProgressEntity.Installing -> true
+
+            // After 500ms: only allow loop-refresh if fake animation is required by Modern Live Activity
+            progress is ProgressEntity.Installing -> requiresAnimation
+
             currentProgress < 0 -> true
             else -> currentProgress > lastProgressValue && ((currentProgress - lastProgressValue) >= PROGRESS_UPDATE_THRESHOLD || currentProgress >= 0.99f)
         }

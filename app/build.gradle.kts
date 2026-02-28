@@ -216,7 +216,6 @@ dependencies {
     // implementation(libs.work.runtime.ktx)
 
     implementation(libs.ktx.serializationJson)
-    implementation(libs.kotlin.reflect)
 
     implementation(libs.hiddenapibypass)
 
@@ -253,7 +252,7 @@ dependencies {
     implementation(libs.haze.materials)
 
     // m3color
-    implementation(libs.m3color)
+    // implementation(libs.m3color)
     // okhttp
     implementation(libs.okhttp)
 
@@ -262,4 +261,6 @@ dependencies {
     implementation(libs.androidx.palette)
 
     implementation(libs.focus.api)
+
+    implementation(libs.materialKolor)
 }

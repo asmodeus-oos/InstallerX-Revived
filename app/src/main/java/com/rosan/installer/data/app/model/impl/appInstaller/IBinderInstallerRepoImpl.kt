@@ -24,7 +24,8 @@ import com.rosan.installer.build.model.entity.Architecture
 import com.rosan.installer.data.app.model.entity.InstallEntity
 import com.rosan.installer.data.app.model.entity.InstallExtraInfoEntity
 import com.rosan.installer.data.app.model.enums.DataType
-import com.rosan.installer.data.app.model.exception.InstallFailedBlacklistedPackageException
+import com.rosan.installer.data.app.model.enums.InstallErrorType
+import com.rosan.installer.data.app.model.exception.InstallException
 import com.rosan.installer.data.app.repo.InstallerRepo
 import com.rosan.installer.data.app.util.InstallOption
 import com.rosan.installer.data.app.util.PackageInstallerUtil.abiOverride
@@ -38,6 +39,7 @@ import com.rosan.installer.data.reflect.repo.ReflectRepo
 import com.rosan.installer.data.reflect.repo.getValue
 import com.rosan.installer.data.settings.model.room.entity.ConfigEntity
 import com.rosan.installer.util.OSUtils
+import com.rosan.installer.util.addFlag
 import com.rosan.installer.util.pm.isFreshInstallCandidate
 import com.rosan.installer.util.pm.isPackageArchivedCompat
 import com.rosan.installer.util.removeFlag
@@ -207,7 +209,10 @@ abstract class IBinderInstallerRepoImpl : InstallerRepo, KoinComponent {
             // Blacklisted package names
             if (managedBlacklistPackages.contains(packageName)) {
                 Timber.w("Installation blocked for $packageName because it is in the blacklist.")
-                throw InstallFailedBlacklistedPackageException("Installation blocked for $packageName because it is in the blacklist.")
+                throw InstallException(
+                    InstallErrorType.BLACKLISTED_PACKAGE,
+                    "Installation blocked for $packageName because it is in the blacklist."
+                )
             }
 
             // Blacklisted SharedUserID
@@ -217,7 +222,10 @@ abstract class IBinderInstallerRepoImpl : InstallerRepo, KoinComponent {
             if (sharedUid != null) {
                 if (sharedUserIdBlacklist.contains(sharedUid) && !sharedUserIdExemption.contains(packageName)) {
                     Timber.w("Installation blocked for $packageName because its sharedUserId '$sharedUid' is blacklisted.")
-                    throw InstallFailedBlacklistedPackageException("Installation blocked for $packageName because its sharedUserId '$sharedUid' is blacklisted.")
+                    throw InstallException(
+                        InstallErrorType.BLACKLISTED_PACKAGE,
+                        "Installation blocked for $packageName because its sharedUserId '$sharedUid' is blacklisted."
+                    )
                 }
             }
         }
@@ -282,14 +290,14 @@ abstract class IBinderInstallerRepoImpl : InstallerRepo, KoinComponent {
         Timber.tag("InstallFlags").d("Initial install flags: ${params.installFlags}")
         Timber.tag("InstallFlags").d("Install flags from config: ${config.installFlags}")
         // Start with the base flags from params and config
-        var newFlags = params.installFlags or config.installFlags
+        var newFlags = params.installFlags.addFlag(config.installFlags)
         // Force-enable the 'ReplaceExisting' flag as a baseline
-        newFlags = newFlags or InstallOption.ReplaceExisting.value
+        newFlags = newFlags.addFlag(InstallOption.ReplaceExisting.value)
         Timber.tag("InstallFlags").d("After adding baseline flags: $newFlags")
         // Conditionally add the 'UnArchive' flag
         if (context.packageManager.isPackageArchivedCompat(packageName)) {
             Timber.tag("InstallFlags").d("Package $packageName is archived, adding unarchive option.")
-            newFlags = newFlags or InstallOption.UnArchive.value
+            newFlags = newFlags.addFlag(InstallOption.UnArchive.value)
         } else {
             Timber.tag("InstallFlags").d("Package $packageName is not archived.")
         }
@@ -305,8 +313,7 @@ abstract class IBinderInstallerRepoImpl : InstallerRepo, KoinComponent {
                     pm.isFreshInstallCandidate(packageName)
 
         if (!shouldGrantAll) {
-            params.installFlags =
-                params.installFlags.removeFlag(InstallOption.GrantAllRequestedPermissions.value)
+            params.installFlags = params.installFlags.removeFlag(InstallOption.GrantAllRequestedPermissions.value)
         }
         // --- Disable End ---
 
