@@ -577,7 +577,8 @@ private fun MixedModuleZip_InitialChoice(
                         onClick = {
                             if (apkChooseAll) {
                                 analysisResults.flatMap { it.appEntities }
-                                    .filter { it.app !is AppEntity.ModuleEntity }
+                                    // Only toggle those that are NOT already selected
+                                    .filter { it.app !is AppEntity.ModuleEntity && !it.selected }
                                     .forEach { entity ->
                                         viewModel.dispatch(
                                             InstallerViewAction.ToggleSelection(
