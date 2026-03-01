@@ -213,6 +213,17 @@ private fun ChoiceContent(
                         title = stringResource(R.string.installer_choice_install_as_module),
                         description = stringResource(R.string.installer_module_id, moduleEntityInfo.id),
                         onClick = {
+                            analysisResults.flatMap { it.appEntities }
+                                .filter { it.app !is AppEntity.ModuleEntity && it.selected }
+                                .forEach { apkEntity ->
+                                    viewModel.dispatch(
+                                        InstallerViewAction.ToggleSelection(
+                                            packageName = apkEntity.app.packageName,
+                                            entity = apkEntity,
+                                            isMultiSelect = true
+                                        )
+                                    )
+                                }
                             viewModel.dispatch(
                                 InstallerViewAction.ToggleSelection(
                                     packageName = entity.app.packageName,
