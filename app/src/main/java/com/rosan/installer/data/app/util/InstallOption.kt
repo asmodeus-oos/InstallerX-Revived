@@ -60,222 +60,164 @@ private fun getInstallOptions(authorizer: ConfigEntity.Authorizer) = InstallOpti
         // Second, apply custom logic based on the authorizer.
         when (it) {
             // The AllowDowngrade option should only be available when the authorizer is Root, Shizuku(running as root).
-            // Or running as SystemApp
-            is InstallOption.AllowDowngrade -> authorizer == ConfigEntity.Authorizer.Root || authorizer == ConfigEntity.Authorizer.Shizuku || (authorizer == ConfigEntity.Authorizer.None && OSUtils.isSystemApp)
+            // Or running as SystemApp.
+            InstallOption.AllowDowngrade -> authorizer == ConfigEntity.Authorizer.Root || authorizer == ConfigEntity.Authorizer.Shizuku || (authorizer == ConfigEntity.Authorizer.None && OSUtils.isSystemApp)
             // All other options are available by default.
             else -> true
         }
     }
 
-@Suppress("unused")
-sealed class InstallOption(
+enum class InstallOption(
     val minSdk: Int = Build.VERSION_CODES.BASE,
     val maxSdk: Int = Int.MAX_VALUE,
     val value: Int,
     @param:StringRes val labelResource: Int,
     @param:StringRes val descResource: Int,
 ) {
-    companion object {
-        val entries = listOf(
-            ReplaceExisting,
-            AllowTest,
-            Internal,
-            External,
-            FromAdb,
-            AllUsers,
-            AllowDowngrade,
-            GrantAllRequestedPermissions,
-            InstantApp,
-            DontKillApp,
-            FullApp,
-            AllocateAggressive,
-            VirtualPreload,
-            Apex,
-            EnableRollback,
-            DisableVerification,
-            Staged,
-            DryRun,
-            DisableAllowedApexUpdateCheck,
-            BypassLowTargetSdkBlock,
-            RequestUpdateOwnerShip,
-            UnArchive
-        )
-    }
-
-    data object ReplaceExisting : InstallOption(
+    ReplaceExisting(
         minSdk = Int.MAX_VALUE, // Don't show on List because handled elsewhere
         value = 0x00000002,
         labelResource = R.string.replace_existing,
         descResource = R.string.replace_existing_desc,
-    )
+    ),
 
-    data object AllowTest : InstallOption(
+    AllowTest(
         value = 0x00000004,
         labelResource = R.string.config_allow_test,
         descResource = R.string.config_allow_test_desc,
-    )
+    ),
 
-    data object Internal : InstallOption(
+    Internal(
         value = 0x00000010,
         labelResource = R.string.internal,
         descResource = R.string.internal_desc,
-    )
+    ),
 
-    data object External : InstallOption(
+    External(
         value = 0x00000008,
         maxSdk = Build.VERSION_CODES.P,
         labelResource = R.string.external,
         descResource = R.string.external_desc,
-    )
+    ),
 
-    data object FromAdb : InstallOption(
+    FromAdb(
         value = 0x00000020,
         labelResource = R.string.from_adb,
         descResource = R.string.from_adb_desc,
-    )
+    ),
 
-    data object AllUsers : InstallOption(
+    AllUsers(
         value = 0x00000040,
         labelResource = R.string.config_all_users,
         descResource = R.string.config_all_users_desc,
-    )
+    ),
 
-    data object AllowDowngrade : InstallOption(
-        value = 0x00000080 or
-                0x00100000,
-        // Starting Android 15, only user root or system is allowed to downgrade app.
-        // Simply setting maxSdk will break root install, so we handle it elsewhere.
-        // maxSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+    AllowDowngrade(
+        value = 0x00000080 or 0x00100000,
         labelResource = R.string.config_allow_downgrade,
         descResource = R.string.config_allow_downgrade_desc,
-    )
+    ),
 
-    data object GrantAllRequestedPermissions : InstallOption(
+    GrantAllRequestedPermissions(
         value = 0x00000100,
         minSdk = Build.VERSION_CODES.M,
         labelResource = R.string.config_grant_all_permissions,
         descResource = R.string.config_grant_all_permissions_desc,
-    )
+    ),
 
-//    @Keep
-//    data object ForceVolumeUuid : InstallOption(
-//        value = PackageManager.INSTALL_FORCE_VOLUME_UUID,
-//        minSdk = Build.VERSION_CODES.M,
-//        labelResource = R.string.force_volume_uuid,
-//        descResource = R.string.force_volume_uuid_desc,
-//    )
-
-//    @Keep
-//    data object ForcePermissionPrompt : InstallOption(
-//        value = PackageManager.INSTALL_FORCE_PERMISSION_PROMPT,
-//        minSdk = Build.VERSION_CODES.N,
-//        labelResource = R.string.force_permission_prompt,
-//        descResource = R.string.force_permission_prompt_desc,
-//    )
-
-    data object InstantApp : InstallOption(
+    InstantApp(
         value = 0x00000800,
         minSdk = Build.VERSION_CODES.N,
         labelResource = R.string.instant_app,
         descResource = R.string.instant_app_desc,
-    )
+    ),
 
-    data object DontKillApp : InstallOption(
+    DontKillApp(
         value = 0x00001000,
         minSdk = Build.VERSION_CODES.N,
         labelResource = R.string.dont_kill_app,
         descResource = R.string.dont_kill_app_desc,
-    )
+    ),
 
-    data object FullApp : InstallOption(
+    FullApp(
         value = 0x00004000,
         minSdk = Build.VERSION_CODES.O,
         labelResource = R.string.full_app,
         descResource = R.string.full_app_desc,
-    )
+    ),
 
-    data object AllocateAggressive : InstallOption(
+    AllocateAggressive(
         value = 0x00008000,
         minSdk = Build.VERSION_CODES.O,
         labelResource = R.string.allocate_aggressive,
         descResource = R.string.allocate_aggressive_desc,
-    )
+    ),
 
-    data object VirtualPreload : InstallOption(
+    VirtualPreload(
         value = 0x00010000,
         minSdk = Build.VERSION_CODES.O_MR1,
         labelResource = R.string.virtual_preload,
         descResource = R.string.virtual_preload_desc,
-    )
+    ),
 
-    data object Apex : InstallOption(
+    Apex(
         value = 0x00020000,
         minSdk = Build.VERSION_CODES.Q,
         labelResource = R.string.apex,
         descResource = R.string.apex_desc,
-    )
+    ),
 
-    data object EnableRollback : InstallOption(
+    EnableRollback(
         value = 0x00040000,
         minSdk = Build.VERSION_CODES.Q,
         labelResource = R.string.enable_rollback,
         descResource = R.string.enable_rollback_desc,
-    )
+    ),
 
-    data object DisableVerification : InstallOption(
+    DisableVerification(
         value = 0x00080000,
         minSdk = Build.VERSION_CODES.Q,
         labelResource = R.string.disable_verification,
         descResource = R.string.disable_verification_desc,
-    )
+    ),
 
-    data object Staged : InstallOption(
+    Staged(
         value = 0x00200000,
         minSdk = Build.VERSION_CODES.Q,
         labelResource = R.string.staged,
         descResource = R.string.staged_desc,
-    )
+    ),
 
-    data object DryRun : InstallOption(
+    DryRun(
         value = 0x00800000,
         minSdk = Build.VERSION_CODES.Q,
         maxSdk = Build.VERSION_CODES.R,
         labelResource = R.string.dry_run,
         descResource = R.string.dry_run_desc,
-    )
+    ),
 
-    // This has no effect
-    /* @Keep
-    data object AllWhitelistRestrictedPermissions : InstallOption(
-        value = 0x00400000,
-        minSdk = Build.VERSION_CODES.S,
-        labelResource = R.string.config_all_whitelist_restricted_permissions,
-        descResource = R.string.config_all_whitelist_restricted_permissions_desc,
-    )*/
-
-    data object DisableAllowedApexUpdateCheck : InstallOption(
-        // Bug in AOSP from 12-13 where the APEX flag here shared a value with AllWhitelistRestrictedPermissions.
+    DisableAllowedApexUpdateCheck(
         value = 0x00800000,
         minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
         labelResource = R.string.disable_allowed_apex_update_check,
         descResource = R.string.disable_allowed_apex_update_check_desc,
-    )
+    ),
 
-    data object BypassLowTargetSdkBlock : InstallOption(
+    BypassLowTargetSdkBlock(
         value = 0x01000000,
         minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
         labelResource = R.string.config_bypass_low_target_sdk,
         descResource = R.string.config_bypass_low_target_sdk_desc,
-    )
+    ),
 
-    data object RequestUpdateOwnerShip : InstallOption(
+    RequestUpdateOwnerShip(
         value = 1 shl 25,
         minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
         labelResource = R.string.config_request_update_ownership,
         descResource = R.string.config_request_update_ownership_desc,
-    )
+    ),
 
-    data object UnArchive : InstallOption(
+    UnArchive(
         value = 1 shl 30,
         minSdk = Int.MAX_VALUE, // Don't show on List because handled elsewhere
         labelResource = R.string.unarchive,
