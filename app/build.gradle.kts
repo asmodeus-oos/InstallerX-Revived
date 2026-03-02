@@ -10,6 +10,8 @@ plugins {
 }
 
 android {
+
+    namespace = "com.android.packageinstaller"
     compileSdk = 36
 
     val properties = Properties()
@@ -21,33 +23,27 @@ android {
             println("Warning: Could not load keystore.properties file: ${e.message}")
         }
     }
+
     val storeFile = properties.getProperty("storeFile") ?: System.getenv("KEYSTORE_FILE")
     val storePassword =
         properties.getProperty("storePassword") ?: System.getenv("KEYSTORE_PASSWORD")
     val keyAlias = properties.getProperty("keyAlias") ?: System.getenv("KEY_ALIAS")
     val keyPassword = properties.getProperty("keyPassword") ?: System.getenv("KEY_PASSWORD")
+
     val hasCustomSigning =
         storeFile != null && storePassword != null && keyAlias != null && keyPassword != null
 
     defaultConfig {
-        // 你如果根据InstallerX的源码进行打包成apk或其他安装包格式
-        // 请换一个applicationId，不要和官方的任何发布版本产生冲突。
-        // If you use InstallerX source code, package it into apk or other installation package format
-        // Please change the applicationId to one that does not conflict with any official release.
-        applicationId = project.findProperty("APP_ID") as String?
-            ?: "com.rosan.installer.x.revived"
-        namespace = "com.rosan.installer"
+        applicationId = "com.android.packageinstaller"
+
         minSdk = 26
         targetSdk = 36
-        // Version control
-        // GitHub Actions will automatically use versionName A.B.C+1 when building preview releases
-        // update versionCode and versionName before manually trigger a stable release
+
         versionCode = 46
         versionName = project.findProperty("VERSION_NAME") as String?
             ?: project.findProperty("BASE_VERSION") as String
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
     }
 
     signingConfigs {
@@ -66,16 +62,19 @@ android {
     }
 
     buildTypes {
+
         getByName("debug") {
             signingConfig =
                 if (hasCustomSigning) {
                     println("Applying 'releaseCustom' signing to debug build.")
                     signingConfigs.getByName("releaseCustom")
                 } else {
-                    println("No custom signing info. Debug build will use the default debug keystore.")
+                    println("No custom signing info. Using default debug keystore.")
                     signingConfigs.getByName("debug")
                 }
+
             isMinifyEnabled = false
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -88,11 +87,13 @@ android {
                     println("Applying 'releaseCustom' signing to release build.")
                     signingConfigs.getByName("releaseCustom")
                 } else {
-                    println("No custom signing info. Debug build will use the default debug keystore.")
+                    println("No custom signing info. Using default debug keystore.")
                     signingConfigs.getByName("debug")
                 }
+
             isShrinkResources = true
             isMinifyEnabled = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -100,19 +101,18 @@ android {
         }
     }
 
-    flavorDimensions.addAll(listOf("connectivity", "level"))
+    flavorDimensions += listOf("connectivity", "level")
 
     productFlavors {
+
         create("online") {
             dimension = "connectivity"
-            // Set the build config field for this flavor.
             buildConfigField("boolean", "INTERNET_ACCESS_ENABLED", "true")
             isDefault = true
         }
 
         create("offline") {
             dimension = "connectivity"
-            // Set the build config field for this flavor.
             buildConfigField("boolean", "INTERNET_ACCESS_ENABLED", "false")
         }
 
@@ -131,8 +131,8 @@ android {
     }
 
     compileOptions {
-        targetCompatibility = JavaVersion.VERSION_25
         sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
     }
 
     buildFeatures {
@@ -143,7 +143,7 @@ android {
 
     packaging {
         resources {
-            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 }
@@ -179,26 +179,26 @@ androidComponents {
 
 aboutLibraries {
     library {
-        // Enable the duplication mode, allows to merge, or link dependencies which relate
         duplicationMode = com.mikepenz.aboutlibraries.plugin.DuplicateMode.MERGE
-        // Configure the duplication rule, to match "duplicates" with
         duplicationRule = com.mikepenz.aboutlibraries.plugin.DuplicateRule.SIMPLE
     }
 }
 
 room {
-    // Specify the schema directory
     schemaDirectory("$projectDir/schemas")
 }
 
 dependencies {
+
     compileOnly(project(":hidden-api"))
+
     implementation(libs.androidx.core)
     implementation(libs.androidx.biometric)
     implementation(libs.androidx.lifecycle)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androix.splashscreen)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.graphics)
@@ -206,17 +206,15 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.compose.navigation)
     implementation(libs.compose.materialIcons)
-    // Preview support only for debug builds
+
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
-    // implementation(libs.work.runtime.ktx)
 
     implementation(libs.ktx.serializationJson)
-
     implementation(libs.hiddenapibypass)
 
     implementation(platform(libs.koin.bom))
@@ -233,30 +231,22 @@ dependencies {
     implementation(libs.appiconloader)
 
     implementation(libs.iamr0s.dhizuku.api)
-
     implementation(libs.iamr0s.androidAppProcess)
 
-    // aboutlibraries
     implementation(libs.aboutlibraries.core)
     implementation(libs.aboutlibraries.compose.m3)
 
-    // log
     implementation(libs.timber)
 
-    // miuix
     implementation(libs.miuix)
     implementation(libs.miuix.icons)
     implementation(libs.capsule)
-    // haze
+
     implementation(libs.haze)
     implementation(libs.haze.materials)
 
-    // m3color
-    // implementation(libs.m3color)
-    // okhttp
     implementation(libs.okhttp)
 
-    // monetcompat
     implementation(libs.monetcompat)
     implementation(libs.androidx.palette)
 
