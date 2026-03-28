@@ -18,12 +18,11 @@ class AndroidPermissionChecker(
     private val context: Context
 ) : PermissionChecker {
 
-    override fun hasPermission(type: PermissionType): Boolean {
-        return when (type) {
+    override fun hasPermission(type: PermissionType) =
+        when (type) {
             PermissionType.NOTIFICATION -> checkNotificationPermission()
             PermissionType.STORAGE -> checkStoragePermission()
         }
-    }
 
     private fun checkNotificationPermission(): Boolean {
         // Notification permission is only required on Android 13 (TIRAMISU) and above.
@@ -36,8 +35,8 @@ class AndroidPermissionChecker(
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun checkStoragePermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    private fun checkStoragePermission() =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Environment.isExternalStorageManager()
         } else {
             // Legacy storage permission for Android 10 (Q) and below.
@@ -46,5 +45,4 @@ class AndroidPermissionChecker(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED
         }
-    }
 }

@@ -94,6 +94,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.rosan.installer.R
+import com.rosan.installer.ui.common.permission.rememberMiuiAppListPermission
 import com.rosan.installer.ui.icons.AppIcons
 import com.rosan.installer.ui.page.main.widget.chip.Chip
 import com.rosan.installer.ui.page.main.widget.setting.AppBackButton
@@ -133,6 +134,19 @@ fun NewApplyPage(
         derivedStateOf {
             lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0
         }
+    }
+
+    val attemptLoadApps = rememberMiuiAppListPermission(
+        onGranted = { viewModel.dispatch(ApplyViewAction.LoadApps) },
+        onDenied = {
+            // Optional: Handle denial, e.g., show a Toast or update a state to show empty UI
+            // Now we fall back so that UI could display itself as the only entry
+            viewModel.dispatch(ApplyViewAction.LoadApps)
+        }
+    )
+
+    LaunchedEffect(Unit) {
+        attemptLoadApps()
     }
 
     val layoutDirection = LocalLayoutDirection.current
@@ -275,11 +289,13 @@ fun NewApplyPage(
                     PullToRefreshBox(
                         state = pullToRefreshState,
                         isRefreshing = refreshing,
-                        onRefresh = { viewModel.dispatch(ApplyViewAction.LoadApps) },
+                        onRefresh = { attemptLoadApps() },
                         modifier = Modifier.fillMaxSize(),
                         indicator = {
                             PullToRefreshDefaults.LoadingIndicator(
-                                modifier = Modifier.align(Alignment.TopCenter),
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .padding(top = paddingValues.calculateTopPadding()),
                                 state = pullToRefreshState,
                                 isRefreshing = refreshing,
                                 color = MaterialTheme.colorScheme.primary,

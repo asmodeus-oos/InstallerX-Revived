@@ -176,7 +176,7 @@ class ApplyViewModel(
     )
 
     init {
-        loadApps()
+        // loadApps()
         collectAppEntities()
     }
 

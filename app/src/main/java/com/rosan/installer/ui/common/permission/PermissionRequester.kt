@@ -16,7 +16,7 @@ import timber.log.Timber
 
 /**
  * A UI-layer helper class to manage runtime permissions requests.
- * It delegates permission state checks to the domain layer (PermissionChecker)
+ * It delegates permission state checks to the domain layer [PermissionChecker]
  * and focuses entirely on handling ActivityResultLaunchers and UI intents.
  *
  * @param activity The ComponentActivity that is requesting the permissions.
