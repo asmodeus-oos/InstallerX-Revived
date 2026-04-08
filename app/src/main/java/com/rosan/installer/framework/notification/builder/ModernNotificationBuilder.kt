@@ -74,6 +74,7 @@ class ModernNotificationBuilder(
         val builder = createBaseBuilder(progress, showDialog, preferDynamicColor, fakeItemProgress)
 
         return when (progress) {
+            is ProgressEntity.InstallResolving -> builder.setContentText(context.getString(R.string.installer_resolving_desc)).build()
             is ProgressEntity.InstallPreparing -> builder.addAction(0, context.getString(R.string.cancel), helper.cancelIntent).build()
             is ProgressEntity.InstallResolvedFailed -> onResolvedFailed(builder).build()
             is ProgressEntity.InstallAnalysedSuccess -> onAnalysedSuccess(builder, preferSystemIcon, isSameState).build()
