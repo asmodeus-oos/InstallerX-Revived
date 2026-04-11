@@ -37,6 +37,7 @@ import androidx.navigation3.scene.SceneInfo
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.scene.rememberSceneState
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.ui.NavDisplayTransitionEffects
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.NavigationEventState
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -47,7 +48,7 @@ import com.rosan.installer.domain.settings.model.ThemeState
 import com.rosan.installer.domain.settings.provider.ThemeStateProvider
 import com.rosan.installer.ui.animation.predictiveback.AOSPCrossActivityAnimation
 import com.rosan.installer.ui.animation.predictiveback.KernelSUClassicPredictiveBackAnimation
-import com.rosan.installer.ui.animation.predictiveback.KernelSUOfficialPredictiveBackAnimation
+import com.rosan.installer.ui.animation.predictiveback.MiuixPredictiveBackAnimation
 import com.rosan.installer.ui.animation.predictiveback.NoPredictiveBackAnimation
 import com.rosan.installer.ui.animation.predictiveback.ScalePredictiveBackAnimation
 import com.rosan.installer.ui.navigation.LocalNavigator
@@ -162,7 +163,7 @@ fun InstallerNavContainer(
             PredictiveBackAnimation.AOSP -> AOSPCrossActivityAnimation(uiState.predictiveBackExitDirection)
             PredictiveBackAnimation.Scale -> ScalePredictiveBackAnimation(uiState.predictiveBackExitDirection)
             PredictiveBackAnimation.KernelSUClassic -> KernelSUClassicPredictiveBackAnimation()
-            PredictiveBackAnimation.KernelSUOfficial -> KernelSUOfficialPredictiveBackAnimation()
+            PredictiveBackAnimation.MIUIX -> MiuixPredictiveBackAnimation()
         }
     }
     val navigator = rememberNavigator(Route.Main)
@@ -352,7 +353,10 @@ fun InstallerNavContainer(
             navigationEventState = gestureState,
             contentAlignment = Alignment.TopStart,
             sizeTransform = null,
-            // Animations elegantly delegated to the handler
+            transitionEffects = NavDisplayTransitionEffects(
+                // Disables touch interception during transitions
+                blockInputDuringTransition = true
+            ),
             predictivePopTransitionSpec = { swipeEdge ->
                 with(predictiveBackAnimationHandler) {
                     onPredictivePopTransitionSpec(swipeEdge = swipeEdge)

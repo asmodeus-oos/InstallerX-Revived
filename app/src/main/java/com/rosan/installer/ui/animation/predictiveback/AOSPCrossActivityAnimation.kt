@@ -10,7 +10,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
@@ -63,13 +62,12 @@ class AOSPCrossActivityAnimation(
         transitionState: NavigationEventTransitionState?,
         contentPageKey: Any,
         currentPageKey: NavKey?,
-    ): Modifier = composed { // 【核心修复】使用 composed { } 包装，确保 DisposableEffect 安全挂载
+    ): Modifier = composed {
         val windowInfo = LocalWindowInfo.current
         val containerHeightPx = windowInfo.containerSize.height
         val pageKey = contentPageKey.toString()
         val deviceCornerRadius = rememberDeviceCornerRadius()
 
-        // 完美生命周期清理：当旧页面被 Navigation 真正从 UI 树拔除时，无缝清理状态
         DisposableEffect(pageKey) {
             onDispose {
                 if (exitingPageKey == pageKey) {
@@ -81,7 +79,6 @@ class AOSPCrossActivityAnimation(
         val enteringStartOffsetPx = with(LocalDensity.current) { 96.dp.toPx() }
 
         val linearProgress = exitAnimatable.value.coerceAtMost(1f)
-        // 与 AOSP 保持一致的 Interpolators.EMPHASIZED
         val emphasizedProgress = CubicBezierEasing(0.2f, 0f, 0f, 1f).transform(linearProgress)
 
         val progressInProgress = (transitionState as? InProgress)
@@ -98,8 +95,6 @@ class AOSPCrossActivityAnimation(
         val isExitingPage = exitingPageKey != null && exitingPageKey == pageKey
         val isCurrentNavTarget = exitingPageKey == null && pageKey == currentPageKey.toString()
 
-        // 【核心修复】无论当前是拖拽还是松手，统一用手势进度计算 dragScale！
-        // 这样松手瞬间，接力棒交接的 scale 值完全一致，彻底杜绝跳闪。
         val maxScale = 0.85f
         val dragScale = 1f - (1f - maxScale) * gestureProgress
 
@@ -114,8 +109,6 @@ class AOSPCrossActivityAnimation(
 
                 when {
                     isExitingPage -> {
-                        // --- 退出上层页 (Post-commit) ---
-                        // AOSP逻辑：继续从拖拽最后的大小缩小至 0.85，向右偏移，并在前 20% 迅速透明
                         val computedScaleX = dragScale + (maxScale - dragScale) * emphasizedProgress
                         val computedTranslationX = enteringStartOffsetPx * directionMultiplier * emphasizedProgress
                         val computedAlpha = if (linearProgress >= 0.2f) 0f else (1f - linearProgress * 5f).coerceAtLeast(0f)
@@ -127,8 +120,6 @@ class AOSPCrossActivityAnimation(
                     }
 
                     isCurrentNavTarget -> {
-                        // --- 拖拽中的上层页 (Pre-commit) ---
-                        // 抛弃 Navigation 自带的 animatedScale，直接使用精准的 dragScale
                         scaleX = dragScale
                         scaleY = dragScale
                         translationX = 0f
@@ -136,17 +127,14 @@ class AOSPCrossActivityAnimation(
                     }
 
                     else -> {
-                        // --- 进入的下层页 (Pre/Post-commit) ---
                         val initialTranslationX = -enteringStartOffsetPx * directionMultiplier
 
                         if (exitingPageKey != null) {
-                            // 松手后：从 dragScale 放大回 1.0f，同时从 -96dp 滑动到 0
                             scaleX = dragScale + (1f - dragScale) * emphasizedProgress
                             scaleY = dragScale + (1f - dragScale) * emphasizedProgress
                             translationX = initialTranslationX * (1f - emphasizedProgress)
                             alpha = 1f
                         } else if (transitionState is InProgress) {
-                            // 拖拽中：跟随一起缩放，固定在 -96dp 偏移处
                             scaleX = dragScale
                             scaleY = dragScale
                             translationX = initialTranslationX
@@ -171,15 +159,17 @@ class AOSPCrossActivityAnimation(
 
     override fun AnimatedContentTransitionScope<Scene<NavKey>>.onPopTransitionSpec(): ContentTransform =
         ContentTransform(
-            targetContentEnter = slideInHorizontally(initialOffsetX = { -it / 4 }) + fadeIn(),
-            initialContentExit = scaleOut(targetScale = 0.9f) + fadeOut(),
+            // 【修改】去掉了底下页面（targetContentEnter）的 fadeIn()
+            targetContentEnter = slideInHorizontally(initialOffsetX = { -it / 4 }),
+            initialContentExit = scaleOut(targetScale = 0.9f) + fadeOut(), // 顶层页面继续保持淡出+缩小
             sizeTransform = null
         )
 
     override fun AnimatedContentTransitionScope<Scene<NavKey>>.onTransitionSpec(): ContentTransform =
         ContentTransform(
             targetContentEnter = slideInHorizontally(initialOffsetX = { it }),
-            initialContentExit = fadeOut(),
+            // 【修改】去掉了底下页面（initialContentExit）的 fadeOut()，替换为 None 让它直接被新页面覆盖
+            initialContentExit = ExitTransition.None,
             sizeTransform = null
         )
 }
