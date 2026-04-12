@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// Copyright (C) 2026 wxxsfxyzm
+// Copyright (C) 2026 InstallerX Revived contributors
 package com.rosan.installer.ui.animation.predictiveback
 
 import androidx.compose.animation.AnimatedContentTransitionScope
@@ -15,7 +15,6 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
@@ -42,14 +41,17 @@ class AOSPCrossActivityAnimation(
         transitionState: NavigationEventTransitionState?,
         currentPageKey: NavKey?,
     ) {
-        if (transitionState is InProgress) {
-            exitAnimatable.snapTo(0f)
-            exitingPageKey = currentPageKey.toString()
+        exitingPageKey = currentPageKey.toString()
 
-            exitAnimatable.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(durationMillis = 150, easing = LinearEasing)
-            )
+        exitAnimatable.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(durationMillis = 150, easing = LinearEasing)
+        )
+    }
+
+    override fun onPagePop(contentPageKey: Any) {
+        if (exitingPageKey == contentPageKey) {
+            exitingPageKey = null
         }
     }
 
@@ -63,14 +65,6 @@ class AOSPCrossActivityAnimation(
         val containerHeightPx = windowInfo.containerSize.height
         val pageKey = contentPageKey.toString()
         val deviceCornerRadius = rememberDeviceCornerRadius()
-
-        DisposableEffect(pageKey) {
-            onDispose {
-                if (exitingPageKey == pageKey) {
-                    exitingPageKey = null
-                }
-            }
-        }
 
         val enteringStartOffsetPx = with(LocalDensity.current) { 96.dp.toPx() }
 

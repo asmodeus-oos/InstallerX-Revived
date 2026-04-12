@@ -68,10 +68,10 @@ import com.rosan.installer.ui.page.main.settings.config.apply.ViewContent
 import com.rosan.installer.ui.page.miuix.widgets.MiuixBackButton
 import com.rosan.installer.ui.page.miuix.widgets.MiuixDropdown
 import com.rosan.installer.ui.theme.getMiuixAppBarColor
-import com.rosan.installer.ui.theme.installerHazeEffect
+import com.rosan.installer.ui.theme.installerMiuixBlurEffect
+import com.rosan.installer.ui.theme.rememberMiuixBlurBackdrop
 import com.rosan.installer.ui.theme.rememberMiuixHazeStyle
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -91,6 +91,7 @@ import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.Switch
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TopAppBar
+import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Close
 import top.yukonga.miuix.kmp.icon.extended.More
@@ -124,12 +125,14 @@ fun MiuixApplyPage(
     val layoutDirection = LocalLayoutDirection.current
     val horizontalSafeInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()
 
+    val topBarBackdrop = rememberMiuixBlurBackdrop(uiState.useBlur)
+
     Scaffold(
         topBar = {
             Column(
                 modifier = Modifier
-                    .installerHazeEffect(hazeState, hazeStyle)
-                    .background(hazeState.getMiuixAppBarColor())
+                    .installerMiuixBlurEffect(topBarBackdrop)
+                    .background(topBarBackdrop.getMiuixAppBarColor())
             ) {
                 TopAppBar(
                     color = Color.Transparent,
@@ -266,7 +269,7 @@ fun MiuixApplyPage(
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .then(hazeState?.let { Modifier.hazeSource(it) } ?: Modifier)
+                                .then(topBarBackdrop?.let { Modifier.layerBackdrop(it) } ?: Modifier)
                                 .scrollEndHaptic()
                                 .overScrollVertical()
                                 .nestedScroll(scrollBehavior.nestedScrollConnection),

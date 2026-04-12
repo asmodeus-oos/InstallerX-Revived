@@ -190,7 +190,9 @@ fun InstallerNavContainer(
                 entryDecorators = listOf(
                     rememberSaveableStateHolderNavEntryDecorator(),
                     rememberViewModelStoreNavEntryDecorator(),
-                    NavEntryDecorator { content ->
+                    NavEntryDecorator(
+                        onPop = predictiveBackAnimationHandler::onPagePop
+                    ) { content ->
                         with(predictiveBackAnimationHandler) {
                             Box(
                                 modifier = Modifier.predictiveBackAnimationDecorator(

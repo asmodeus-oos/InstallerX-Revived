@@ -33,7 +33,7 @@ fun rememberMiuixBlurBackdrop(enableBlur: Boolean): LayerBackdrop? {
 
 /**
  * Determine the app bar background color based on the Backdrop availability.
- * * @return Transparent if Backdrop is active, otherwise the default surface color.
+ * @return Transparent if Backdrop is active, otherwise the default surface color.
  */
 @Composable
 fun LayerBackdrop?.getMiuixAppBarColor(): Color =
@@ -41,7 +41,7 @@ fun LayerBackdrop?.getMiuixAppBarColor(): Color =
 
 /**
  * Apply a standard glassmorphism blur effect using Miuix Backdrop.
- * * @param backdrop The LayerBackdrop providing the visual source.
+ * @param backdrop The LayerBackdrop providing the visual source.
  * @param enabled Whether the effect is locally enabled for this component.
  * @param blurRadius The radius of the Gaussian blur.
  * @param shape The clipping shape for the blurred area.

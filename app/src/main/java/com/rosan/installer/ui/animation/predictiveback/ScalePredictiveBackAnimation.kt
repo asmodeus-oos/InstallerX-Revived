@@ -58,6 +58,12 @@ class ScalePredictiveBackAnimation(
         }
     }
 
+    override fun onPagePop(contentPageKey: Any) {
+        if (exitingPageKey == contentPageKey) {
+            exitingPageKey = null
+        }
+    }
+
     @Composable
     override fun Modifier.predictiveBackAnimationDecorator(
         transitionState: NavigationEventTransitionState?,

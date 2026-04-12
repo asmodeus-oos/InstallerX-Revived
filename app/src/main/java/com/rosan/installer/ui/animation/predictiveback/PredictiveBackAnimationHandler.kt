@@ -31,6 +31,16 @@ interface PredictiveBackAnimationHandler {
     )
 
     /**
+     * Callback when page actually pop
+     *
+     * @param contentPageKey The [NavKey] of the page being pop.
+     */
+    fun onPagePop(
+        contentPageKey: Any,
+    ) {
+    }
+
+    /**
      * A UI decorator applied to every page during the rendering process.
      * * Allows for custom modifications to the page layout or graphics layer.
      *

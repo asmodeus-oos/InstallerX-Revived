@@ -370,6 +370,11 @@ fun MiuixThemeSettingsPage(
                         MiuixPredictiveBackExitDirectionWidget(
                             currentDirection = uiState.predictiveBackExitDirection,
                             onDirectionChange = {
+                                transition.setPlaytimeAfterInitialAndTargetStateEstablished(
+                                    transition.targetState,
+                                    transition.targetState,
+                                    transition.playTimeNanos
+                                )
                                 viewModel.dispatch(ThemeSettingsAction.SetPredictiveBackExitDirection(it))
                             }
                         )
