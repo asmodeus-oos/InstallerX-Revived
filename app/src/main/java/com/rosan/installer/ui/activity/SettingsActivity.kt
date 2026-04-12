@@ -211,7 +211,7 @@ fun InstallerNavContainer(
                         if (uiState.useMiuix) {
                             MiuixMainPageWrapper(uiState, layoutType)
                         } else {
-                            MainPage()
+                            MainPage(uiState)
                         }
                     }
                     entry<Route.EditConfig> { key ->

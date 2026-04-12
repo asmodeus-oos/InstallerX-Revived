@@ -165,32 +165,25 @@ fun MiuixInstallerGlobalSettingsPage(
                         changeInstallMode = { newMode ->
                             viewModel.dispatch(InstallerSettingsAction.ChangeGlobalInstallMode(newMode))
                         }
-                    ) {
-                        AnimatedVisibility(
-                            visible = isNotificationMode,
-                            enter = fadeIn() + expandVertically(),
-                            exit = fadeOut() + shrinkVertically()
-                        ) {
-                            MiuixNavigationItemWidget(
-                                title = stringResource(R.string.notification_settings),
-                                description = stringResource(R.string.notification_settings_desc),
-                                onClick = { navigator.push(Route.NotificationSettings) }
-                            )
-                        }
+                    )
+                    MiuixNavigationItemWidget(
+                        title = stringResource(R.string.notification_settings),
+                        description = stringResource(R.string.notification_settings_desc),
+                        onClick = { navigator.push(Route.NotificationSettings) }
+                    )
 
-                        if (BiometricManager
-                                .from(LocalContext.current)
-                                .canAuthenticate(BIOMETRIC_WEAK or BIOMETRIC_STRONG or DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS
-                        ) {
-                            MiuixSwitchWidget(
-                                title = stringResource(R.string.installer_settings_require_biometric_auth),
-                                description = stringResource(R.string.installer_settings_require_biometric_auth_desc),
-                                checked = uiState.installerRequireBiometricAuth,
-                                onCheckedChange = {
-                                    viewModel.dispatch(InstallerSettingsAction.ChangeBiometricAuth(it))
-                                }
-                            )
-                        }
+                    if (BiometricManager
+                            .from(LocalContext.current)
+                            .canAuthenticate(BIOMETRIC_WEAK or BIOMETRIC_STRONG or DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS
+                    ) {
+                        MiuixSwitchWidget(
+                            title = stringResource(R.string.installer_settings_require_biometric_auth),
+                            description = stringResource(R.string.installer_settings_require_biometric_auth_desc),
+                            checked = uiState.installerRequireBiometricAuth,
+                            onCheckedChange = {
+                                viewModel.dispatch(InstallerSettingsAction.ChangeBiometricAuth(it))
+                            }
+                        )
                     }
                 }
             }

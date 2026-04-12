@@ -33,6 +33,9 @@ interface PredictiveBackAnimationHandler {
     /**
      * Callback when page actually pop
      *
+     * **NOTE:** the page will pop from view tree IMMEDIATELY
+     * after this callback completed
+     *
      * @param contentPageKey The [NavKey] of the page being pop.
      */
     fun onPagePop(
