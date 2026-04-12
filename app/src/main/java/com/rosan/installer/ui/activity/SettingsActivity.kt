@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -19,7 +20,8 @@ import com.rosan.installer.domain.settings.model.ThemeState
 import com.rosan.installer.domain.settings.provider.ThemeStateProvider
 import com.rosan.installer.ui.navigation.InstallerNavContainer
 import com.rosan.installer.ui.theme.InstallerTheme
-import com.rosan.installer.ui.util.calculateWindowLayoutType
+import com.rosan.installer.ui.theme.LocalWindowLayoutInfo
+import com.rosan.installer.ui.theme.rememberWindowLayoutInfo
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -47,31 +49,35 @@ class SettingsActivity : ComponentActivity(), KoinComponent {
             // Prevent heavy navigation setup until state is ready
             if (!isThemeLoaded) return@setContent
 
-            val layoutType = calculateWindowLayoutType()
+            val layoutInfo = rememberWindowLayoutInfo()
 
-            InstallerTheme(
-                isExpressive = uiState.isExpressive,
-                useMiuix = uiState.useMiuix,
-                themeMode = uiState.themeMode,
-                paletteStyle = uiState.paletteStyle,
-                colorSpec = uiState.colorSpec,
-                useDynamicColor = uiState.useDynamicColor,
-                useMiuixMonet = uiState.useMiuixMonet,
-                seedColor = uiState.seedColor
+            CompositionLocalProvider(
+                LocalWindowLayoutInfo provides layoutInfo
             ) {
-                val backgroundColor =
-                    if (uiState.useMiuix)
-                        MiuixTheme.colorScheme.surface
-                    else if (uiState.isExpressive)
-                        MaterialTheme.colorScheme.surfaceContainer
-                    else
-                        MaterialTheme.colorScheme.surface
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(backgroundColor)
+                InstallerTheme(
+                    isExpressive = uiState.isExpressive,
+                    useMiuix = uiState.useMiuix,
+                    themeMode = uiState.themeMode,
+                    paletteStyle = uiState.paletteStyle,
+                    colorSpec = uiState.colorSpec,
+                    useDynamicColor = uiState.useDynamicColor,
+                    useMiuixMonet = uiState.useMiuixMonet,
+                    seedColor = uiState.seedColor
                 ) {
-                    InstallerNavContainer(uiState, layoutType)
+                    val backgroundColor =
+                        if (uiState.useMiuix)
+                            MiuixTheme.colorScheme.surface
+                        else if (uiState.isExpressive)
+                            MaterialTheme.colorScheme.surfaceContainer
+                        else
+                            MaterialTheme.colorScheme.surface
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(backgroundColor)
+                    ) {
+                        InstallerNavContainer(uiState)
+                    }
                 }
             }
         }

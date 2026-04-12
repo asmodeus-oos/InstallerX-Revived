@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -64,6 +63,7 @@ import com.rosan.installer.ui.page.main.settings.config.all.AllPage
 import com.rosan.installer.ui.page.main.settings.config.all.NewAllPage
 import com.rosan.installer.ui.page.main.settings.preferred.NewPreferredPage
 import com.rosan.installer.ui.page.main.settings.preferred.PreferredPage
+import com.rosan.installer.ui.theme.LocalWindowLayoutInfo
 import com.rosan.installer.ui.theme.installerMaterial3BlurEffect
 import com.rosan.installer.ui.theme.rememberMaterial3BlurBackdrop
 import kotlinx.coroutines.flow.map
@@ -131,71 +131,65 @@ fun MainPage(
         }
     }
 
-    BoxWithConstraints(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // Expanded layout: >= 840dp OR medium devices in landscape (like foldables)
-        val showRail = maxWidth >= 840.dp || (maxWidth >= 600.dp && maxWidth > maxHeight)
+    val layoutInfo = LocalWindowLayoutInfo.current
+    val showRail = layoutInfo.showNavigationRail
+    val isMedium = layoutInfo.isMediumPortrait
 
-        // Medium layout: >= 600dp but in portrait mode (like foldables in portrait or small tablets)
-        val isMedium = maxWidth >= 600.dp && !showRail
+    val navigationSide =
+        if (showRail) WindowInsetsSides.Start
+        else WindowInsetsSides.Bottom
 
-        val navigationSide =
-            if (showRail) WindowInsetsSides.Start
-            else WindowInsetsSides.Bottom
+    val navigationWindowInsets = WindowInsets.safeDrawing.only(
+        (if (showRail) WindowInsetsSides.Vertical
+        else WindowInsetsSides.Horizontal) + navigationSide
+    )
 
-        val navigationWindowInsets = WindowInsets.safeDrawing.only(
-            (if (showRail) WindowInsetsSides.Vertical
-            else WindowInsetsSides.Horizontal) + navigationSide
-        )
-
-        if (!showRail) {
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                bottomBar = {
-                    RowNavigation(
-                        modifier = Modifier.installerMaterial3BlurEffect(backdrop),
-                        isM3e = showExpressiveUI,
-                        windowInsets = navigationWindowInsets,
-                        data = data,
-                        currentPage = currentPage,
-                        onPageChanged = { onPageChanged(it) },
-                        configCount = configCount,
-                        containerColor = if (useBlur) Color.Transparent else BottomAppBarDefaults.containerColor,
-                        isMedium = isMedium
-                    )
-                }
-            ) { paddingValues ->
-                HorizontalPager(
-                    state = pagerState,
-                    userScrollEnabled = true,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .then(backdrop?.let { Modifier.layerBackdrop(backdrop) } ?: Modifier)
-                ) { page ->
-                    data[page].content(paddingValues)
-                }
-            }
-        } else {
-            Row(modifier = Modifier.fillMaxSize()) {
-                ColumnNavigation(
+    if (!showRail) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            bottomBar = {
+                RowNavigation(
+                    modifier = Modifier.installerMaterial3BlurEffect(backdrop),
                     isM3e = showExpressiveUI,
                     windowInsets = navigationWindowInsets,
                     data = data,
                     currentPage = currentPage,
-                    onPageChanged = { onPageChanged(it) }
+                    onPageChanged = { onPageChanged(it) },
+                    configCount = configCount,
+                    containerColor = if (useBlur) Color.Transparent else BottomAppBarDefaults.containerColor,
+                    isMedium = isMedium
                 )
+            }
+        ) { paddingValues ->
+            HorizontalPager(
+                state = pagerState,
+                userScrollEnabled = true,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(backdrop?.let { Modifier.layerBackdrop(backdrop) } ?: Modifier)
+            ) { page ->
+                data[page].content(paddingValues)
+            }
+        }
+    } else {
+        Row(modifier = Modifier.fillMaxSize()) {
+            ColumnNavigation(
+                isM3e = showExpressiveUI,
+                windowInsets = navigationWindowInsets,
+                data = data,
+                currentPage = currentPage,
+                onPageChanged = { onPageChanged(it) }
+            )
 
-                HorizontalPager(
-                    state = pagerState,
-                    userScrollEnabled = true,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize()
-                        .then(backdrop?.let { Modifier.layerBackdrop(backdrop) } ?: Modifier)
-                ) { page ->
-                    data[page].content(PaddingValues(0.dp))
-                }
+            HorizontalPager(
+                state = pagerState,
+                userScrollEnabled = true,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+                    .then(backdrop?.let { Modifier.layerBackdrop(backdrop) } ?: Modifier)
+            ) { page ->
+                data[page].content(PaddingValues(0.dp))
             }
         }
     }

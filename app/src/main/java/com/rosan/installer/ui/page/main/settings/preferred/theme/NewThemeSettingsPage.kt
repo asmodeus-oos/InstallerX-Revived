@@ -415,7 +415,22 @@ fun NewThemeSettingsPage(
                 }
             }
 
-            // --- Group 4: Package Icons ---
+            // --- Group 4: Predictive Back ---
+            item {
+                SplicedColumnGroup(
+                    title = stringResource(R.string.theme_settings_predictive_back)
+                ) {
+                    item { PredictiveBackAnimationWidget(uiState) { showPredictiveBackAnimationDialog = true } }
+                    item(
+                        visible = uiState.predictiveBackAnimation == PredictiveBackAnimation.Scale ||
+                                uiState.predictiveBackAnimation == PredictiveBackAnimation.AOSP
+                    ) {
+                        PredictiveBackAnimationDirectionWidget(uiState) { showPredictiveBackExitDirectionDialog = true }
+                    }
+                }
+            }
+
+            // --- Group 5: Package Icons ---
             item {
                 SplicedColumnGroup(
                     title = stringResource(R.string.theme_settings_package_icons)
@@ -432,7 +447,7 @@ fun NewThemeSettingsPage(
                 }
             }
 
-            // --- Group 5: Launcher Icons ---
+            // --- Group 6: Launcher Icons ---
             item {
                 SplicedColumnGroup(
                     title = stringResource(R.string.theme_settings_launcher_icons)
@@ -451,21 +466,6 @@ fun NewThemeSettingsPage(
                                 }
                             }
                         )
-                    }
-                }
-            }
-
-            // --- Group 6: Predictive Back ---
-            item {
-                SplicedColumnGroup(
-                    title = stringResource(R.string.theme_settings_predictive_back)
-                ) {
-                    item { PredictiveBackAnimationWidget(uiState) { showPredictiveBackAnimationDialog = true } }
-                    item(
-                        visible = uiState.predictiveBackAnimation == PredictiveBackAnimation.Scale ||
-                                uiState.predictiveBackAnimation == PredictiveBackAnimation.AOSP
-                    ) {
-                        PredictiveBackAnimationDirectionWidget(uiState) { showPredictiveBackExitDirectionDialog = true }
                     }
                 }
             }

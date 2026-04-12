@@ -59,13 +59,11 @@ import com.rosan.installer.ui.page.miuix.settings.preferred.installer.notificati
 import com.rosan.installer.ui.page.miuix.settings.preferred.lab.MiuixLabPage
 import com.rosan.installer.ui.page.miuix.settings.preferred.theme.MiuixThemeSettingsPage
 import com.rosan.installer.ui.page.miuix.settings.preferred.uninstaller.MiuixUninstallerGlobalSettingsPage
-import com.rosan.installer.ui.util.WindowLayoutType
 import kotlinx.coroutines.launch
 
 @Composable
 fun InstallerNavContainer(
-    uiState: ThemeState,
-    layoutType: WindowLayoutType
+    uiState: ThemeState
 ) {
     val predictiveBackAnimationHandler = remember(uiState.predictiveBackAnimation, uiState.predictiveBackExitDirection) {
         when (uiState.predictiveBackAnimation) {
@@ -126,7 +124,7 @@ fun InstallerNavContainer(
                 entryProvider = entryProvider {
                     entry<Route.Main> {
                         if (uiState.useMiuix) {
-                            MiuixMainPageWrapper(uiState, layoutType)
+                            MiuixMainPageWrapper(uiState)
                         } else {
                             MainPage(uiState)
                         }

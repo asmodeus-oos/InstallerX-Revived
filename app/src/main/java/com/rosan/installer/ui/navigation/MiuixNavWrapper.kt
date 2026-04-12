@@ -20,15 +20,17 @@ import com.rosan.installer.domain.settings.model.ThemeState
 import com.rosan.installer.ui.page.main.settings.SettingsSharedViewModel
 import com.rosan.installer.ui.page.miuix.settings.SettingsCompactLayout
 import com.rosan.installer.ui.page.miuix.settings.SettingsWideScreenLayout
+import com.rosan.installer.ui.theme.LocalWindowLayoutInfo
+import com.rosan.installer.ui.theme.WindowLayoutType
 import com.rosan.installer.ui.theme.rememberMiuixBlurBackdrop
-import com.rosan.installer.ui.util.WindowLayoutType
 import org.koin.androidx.compose.koinViewModel
 import top.yukonga.miuix.kmp.basic.NavigationItem
 import top.yukonga.miuix.kmp.basic.SnackbarHostState
 
 // Centralized complex layout logic to keep provider clean and readable
 @Composable
-fun MiuixMainPageWrapper(uiState: ThemeState, layoutType: WindowLayoutType) {
+fun MiuixMainPageWrapper(uiState: ThemeState) {
+    val layoutInfo = LocalWindowLayoutInfo.current
     val sharedViewModel: SettingsSharedViewModel =
         koinViewModel(viewModelStoreOwner = LocalActivity.current as ComponentActivity)
     val sharedState by sharedViewModel.state.collectAsStateWithLifecycle()
@@ -68,7 +70,7 @@ fun MiuixMainPageWrapper(uiState: ThemeState, layoutType: WindowLayoutType) {
     val miuixBackdrop = rememberMiuixBlurBackdrop(useBlur)
 
     // Branch statically without layout delay traps
-    if (layoutType == WindowLayoutType.EXPANDED) {
+    if (layoutInfo.type == WindowLayoutType.EXPANDED || layoutInfo.showNavigationRail) {
         SettingsWideScreenLayout(
             pagerState = pagerState,
             navigationItems = navigationItems,
