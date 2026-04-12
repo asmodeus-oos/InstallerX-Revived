@@ -285,7 +285,7 @@ fun SettingsWideScreenLayout(
                     .then(
                         if (blurActive) {
                             Modifier.textureBlur(
-                                backdrop = miuixBackdrop!!,
+                                backdrop = miuixBackdrop,
                                 shape = RectangleShape,
                                 blurRadius = 25f,
                                 colors = BlurColors(
@@ -399,10 +399,10 @@ private fun SettingsWideContent(
 
 @Composable
 private fun SettingsPagerContent(
+    modifier: Modifier = Modifier,
     pagerState: PagerState,
     navigationItems: List<NavigationItem>,
     snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier,
     outerPadding: PaddingValues,
     useFloatingBottomBar: Boolean,
     floatingBackdrop: KyantLayerBackdrop?,
@@ -413,7 +413,6 @@ private fun SettingsPagerContent(
         userScrollEnabled = true,
         overscrollEffect = null,
         beyondViewportPageCount = 1,
-        // 根据状态挂载不同库的 Backdrop 修饰符抓取底层画面
         modifier = modifier
             .then(if (useFloatingBottomBar && floatingBackdrop != null) Modifier.kyantLayerBackdrop(floatingBackdrop) else Modifier)
             .then(if (!useFloatingBottomBar && miuixBackdrop != null) Modifier.miuixLayerBackdrop(miuixBackdrop) else Modifier)
@@ -426,6 +425,7 @@ private fun SettingsPagerContent(
             )
 
             1 -> MiuixPreferredPage(
+                enableBlur = floatingBackdrop != null && miuixBackdrop != null,
                 title = navigationItems[page].label,
                 outerPadding = outerPadding,
                 snackbarHostState = snackbarHostState

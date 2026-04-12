@@ -59,6 +59,7 @@ import top.yukonga.miuix.kmp.utils.scrollEndHaptic
 
 @Composable
 fun MiuixNotificationSettingsPage(
+    useBlur: Boolean,
     viewModel: NotificationSettingsViewModel = koinViewModel()
 ) {
     val navigator = LocalNavigator.current
@@ -101,7 +102,7 @@ fun MiuixNotificationSettingsPage(
     val activeStyle = if (!isModernEligible) NotificationStyle.STANDARD else uiState.currentStyle
     val selectedIndex = styleOptions.indexOf(activeStyle).coerceAtLeast(0)
 
-    val topBarBackdrop = rememberMiuixBlurBackdrop(uiState.useBlur)
+    val topBarBackdrop = rememberMiuixBlurBackdrop(useBlur)
 
     Scaffold(
         topBar = {

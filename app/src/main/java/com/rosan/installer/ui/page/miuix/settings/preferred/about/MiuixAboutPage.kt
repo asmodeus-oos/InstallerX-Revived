@@ -79,6 +79,7 @@ import top.yukonga.miuix.kmp.window.WindowDialog
 
 @Composable
 fun MiuixAboutPage(
+    useBlur: Boolean,
     viewModel: AboutViewModel = koinViewModel()
 ) {
     val navigator = LocalNavigator.current
@@ -141,7 +142,7 @@ fun MiuixAboutPage(
     val layoutDirection = LocalLayoutDirection.current
     val horizontalSafeInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()
 
-    val topBarBackdrop = rememberMiuixBlurBackdrop(uiState.useBlur)
+    val topBarBackdrop = rememberMiuixBlurBackdrop(useBlur)
 
     Scaffold(
         topBar = {

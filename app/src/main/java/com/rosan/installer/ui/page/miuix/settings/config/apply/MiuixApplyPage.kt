@@ -70,8 +70,6 @@ import com.rosan.installer.ui.page.miuix.widgets.MiuixDropdown
 import com.rosan.installer.ui.theme.getMiuixAppBarColor
 import com.rosan.installer.ui.theme.installerMiuixBlurEffect
 import com.rosan.installer.ui.theme.rememberMiuixBlurBackdrop
-import com.rosan.installer.ui.theme.rememberMiuixHazeStyle
-import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -103,18 +101,14 @@ import top.yukonga.miuix.kmp.window.WindowListPopup
 @Composable
 fun MiuixApplyPage(
     id: Long,
-    viewModel: ApplyViewModel = koinViewModel {
-        parametersOf(id)
-    }
+    useBlur: Boolean,
+    viewModel: ApplyViewModel = koinViewModel { parametersOf(id) }
 ) {
     val navigator = LocalNavigator.current
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
     val scrollBehavior = MiuixScrollBehavior()
-
-    val hazeState = if (uiState.useBlur) remember { HazeState() } else null
-    val hazeStyle = rememberMiuixHazeStyle()
 
     val showFloating by remember {
         derivedStateOf {
@@ -125,7 +119,7 @@ fun MiuixApplyPage(
     val layoutDirection = LocalLayoutDirection.current
     val horizontalSafeInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()
 
-    val topBarBackdrop = rememberMiuixBlurBackdrop(uiState.useBlur)
+    val topBarBackdrop = rememberMiuixBlurBackdrop(useBlur)
 
     Scaffold(
         topBar = {

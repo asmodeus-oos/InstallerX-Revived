@@ -58,6 +58,7 @@ import top.yukonga.miuix.kmp.utils.scrollEndHaptic
 
 @Composable
 fun MiuixUninstallerGlobalSettingsPage(
+    useBlur: Boolean,
     viewModel: UninstallerSettingsViewModel = koinViewModel()
 ) {
     val navigator = LocalNavigator.current
@@ -89,7 +90,7 @@ fun MiuixUninstallerGlobalSettingsPage(
     val layoutDirection = LocalLayoutDirection.current
     val horizontalSafeInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()
 
-    val topBarBackdrop = rememberMiuixBlurBackdrop(uiState.useBlur)
+    val topBarBackdrop = rememberMiuixBlurBackdrop(useBlur)
 
     Scaffold(
         topBar = {

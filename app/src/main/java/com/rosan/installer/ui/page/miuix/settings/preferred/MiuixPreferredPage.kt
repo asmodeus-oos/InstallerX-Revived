@@ -66,6 +66,7 @@ import top.yukonga.miuix.kmp.utils.scrollEndHaptic
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun MiuixPreferredPage(
+    enableBlur: Boolean,
     viewModel: PreferredViewModel = koinViewModel(),
     title: String,
     outerPadding: PaddingValues,
@@ -118,7 +119,7 @@ fun MiuixPreferredPage(
     val layoutDirection = LocalLayoutDirection.current
     val horizontalSafeInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()
 
-    val topBarBackdrop = rememberMiuixBlurBackdrop(uiState.useBlur)
+    val topBarBackdrop = rememberMiuixBlurBackdrop(enableBlur)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

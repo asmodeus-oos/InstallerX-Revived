@@ -21,7 +21,6 @@ class NotificationSettingsViewModel(
 
     val state: StateFlow<NotificationSettingsState> = appSettingsRepo.preferencesFlow.map { prefs ->
         NotificationSettingsState(
-            useBlur = prefs.useBlur,
             showLiveActivity = prefs.showLiveActivity,
             showMiIsland = prefs.useMiIsland,
             miIslandBypassRestriction = prefs.useMiIslandBypassRestriction,

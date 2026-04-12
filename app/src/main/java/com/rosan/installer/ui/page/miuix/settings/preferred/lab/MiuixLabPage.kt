@@ -65,6 +65,7 @@ import top.yukonga.miuix.kmp.utils.scrollEndHaptic
 
 @Composable
 fun MiuixLabPage(
+    useBlur: Boolean,
     viewModel: LabSettingsViewModel = koinViewModel()
 ) {
     val navigator = LocalNavigator.current
@@ -119,7 +120,7 @@ fun MiuixLabPage(
     val layoutDirection = LocalLayoutDirection.current
     val horizontalSafeInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()
 
-    val topBarBackdrop = rememberMiuixBlurBackdrop(uiState.useBlur)
+    val topBarBackdrop = rememberMiuixBlurBackdrop(useBlur)
 
     Scaffold(
         topBar = {
