@@ -2,6 +2,7 @@
 // Copyright (C) 2026 InstallerX Revived contributors
 package com.rosan.installer.ui.animation.predictiveback
 
+import android.R
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
@@ -30,6 +31,8 @@ import androidx.navigationevent.NavigationEventTransitionState
 import androidx.navigationevent.NavigationEventTransitionState.InProgress
 import com.rosan.installer.domain.settings.model.PredictiveBackExitDirection
 import com.rosan.installer.ui.util.rememberDeviceCornerRadius
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 class AOSPCrossActivityAnimation(
     private val exitDirection: PredictiveBackExitDirection = PredictiveBackExitDirection.ALWAYS_RIGHT
@@ -49,9 +52,12 @@ class AOSPCrossActivityAnimation(
         )
     }
 
-    override fun onPagePop(contentPageKey: Any) {
+    override fun onPagePop(contentPageKey: Any, animationScope: CoroutineScope) {
         if (exitingPageKey == contentPageKey) {
             exitingPageKey = null
+            animationScope.launch {
+                exitAnimatable.snapTo(0f)
+            }
         }
     }
 
@@ -68,7 +74,7 @@ class AOSPCrossActivityAnimation(
 
         val enteringStartOffsetPx = with(LocalDensity.current) { 96.dp.toPx() }
 
-        val linearProgress = exitAnimatable.value.coerceAtMost(1f)
+        val linearProgress = exitAnimatable.value
         val emphasizedProgress = CubicBezierEasing(0.2f, 0f, 0f, 1f).transform(linearProgress)
 
         val progressInProgress = (transitionState as? InProgress)
@@ -95,10 +101,12 @@ class AOSPCrossActivityAnimation(
 
         this
             .graphicsLayer {
-                transformOrigin = TransformOrigin(currentPivotX, currentPivotY)
+                if (transitionState is InProgress)
+                    transformOrigin = TransformOrigin(currentPivotX, currentPivotY)
 
                 when {
                     isExitingPage -> {
+                        // top page when onBackPressed called (back committed)
                         val computedScaleX = dragScale + (maxScale - dragScale) * emphasizedProgress
                         val computedTranslationX = enteringStartOffsetPx * directionMultiplier * emphasizedProgress
                         val computedAlpha = if (linearProgress >= 0.2f) 0f else (1f - linearProgress * 5f).coerceAtLeast(0f)
@@ -110,6 +118,7 @@ class AOSPCrossActivityAnimation(
                     }
 
                     isCurrentNavTarget -> {
+                        // top page before onBackPressed called
                         scaleX = dragScale
                         scaleY = dragScale
                         translationX = 0f
@@ -117,14 +126,15 @@ class AOSPCrossActivityAnimation(
                     }
 
                     else -> {
+                        // bottom page
                         val initialTranslationX = -enteringStartOffsetPx * directionMultiplier
 
-                        if (exitingPageKey != null) {
+                        if (exitingPageKey != null) { // after onBackPressed
                             scaleX = dragScale + (1f - dragScale) * emphasizedProgress
                             scaleY = dragScale + (1f - dragScale) * emphasizedProgress
                             translationX = initialTranslationX * (1f - emphasizedProgress)
                             alpha = 1f
-                        } else if (transitionState is InProgress) {
+                        } else if (transitionState is InProgress) { // before onBackPressed
                             scaleX = dragScale
                             scaleY = dragScale
                             translationX = initialTranslationX
