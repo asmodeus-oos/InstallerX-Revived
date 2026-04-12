@@ -31,7 +31,6 @@ import androidx.navigationevent.NavigationEventTransitionState
 import androidx.navigationevent.NavigationEventTransitionState.InProgress
 import com.rosan.installer.domain.settings.model.PredictiveBackExitDirection
 import com.rosan.installer.ui.util.rememberDeviceCornerRadius
-import timber.log.Timber
 
 class AOSPCrossActivityAnimation(
     private val exitDirection: PredictiveBackExitDirection = PredictiveBackExitDirection.ALWAYS_RIGHT
@@ -45,15 +44,12 @@ class AOSPCrossActivityAnimation(
     ) {
         if (transitionState is InProgress) {
             exitAnimatable.snapTo(0f)
-
             exitingPageKey = currentPageKey.toString()
-            Timber.d("[BackAnim] onBackPressed: exitingPageKey='$exitingPageKey'")
 
             exitAnimatable.animateTo(
                 targetValue = 1f,
-                animationSpec = tween(durationMillis = 450, easing = LinearEasing)
+                animationSpec = tween(durationMillis = 150, easing = LinearEasing)
             )
-            Timber.d("[BackAnim] animateTo(1f) complete, value=${exitAnimatable.value}")
         }
     }
 
@@ -159,16 +155,14 @@ class AOSPCrossActivityAnimation(
 
     override fun AnimatedContentTransitionScope<Scene<NavKey>>.onPopTransitionSpec(): ContentTransform =
         ContentTransform(
-            // 【修改】去掉了底下页面（targetContentEnter）的 fadeIn()
             targetContentEnter = slideInHorizontally(initialOffsetX = { -it / 4 }),
-            initialContentExit = scaleOut(targetScale = 0.9f) + fadeOut(), // 顶层页面继续保持淡出+缩小
+            initialContentExit = scaleOut(targetScale = 0.9f) + fadeOut(),
             sizeTransform = null
         )
 
     override fun AnimatedContentTransitionScope<Scene<NavKey>>.onTransitionSpec(): ContentTransform =
         ContentTransform(
             targetContentEnter = slideInHorizontally(initialOffsetX = { it }),
-            // 【修改】去掉了底下页面（initialContentExit）的 fadeOut()，替换为 None 让它直接被新页面覆盖
             initialContentExit = ExitTransition.None,
             sizeTransform = null
         )

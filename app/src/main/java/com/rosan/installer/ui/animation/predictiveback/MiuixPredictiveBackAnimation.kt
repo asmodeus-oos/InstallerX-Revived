@@ -13,7 +13,6 @@ import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
 import androidx.navigationevent.NavigationEventTransitionState
 
-// TODO Add an config page for user to select predictiveBack implement
 class MiuixPredictiveBackAnimation : PredictiveBackAnimationHandler {
 
     override suspend fun onBackPressed(
@@ -37,18 +36,11 @@ class MiuixPredictiveBackAnimation : PredictiveBackAnimationHandler {
 
     override fun AnimatedContentTransitionScope<Scene<NavKey>>.onPredictivePopTransitionSpec(
         swipeEdge: Int
-    ): ContentTransform {
-        // 直接调用 NavDisplay 暴露的默认预测性返回动画
-        return defaultPredictivePopTransitionSpec<NavKey>().invoke(this, swipeEdge)
-    }
+    ): ContentTransform = defaultPredictivePopTransitionSpec<NavKey>().invoke(this, swipeEdge)
 
-    override fun AnimatedContentTransitionScope<Scene<NavKey>>.onPopTransitionSpec(): ContentTransform {
-        // 直接调用 NavDisplay 暴露的默认返回动画
-        return defaultPopTransitionSpec<NavKey>().invoke(this)
-    }
+    override fun AnimatedContentTransitionScope<Scene<NavKey>>.onPopTransitionSpec(): ContentTransform =
+        defaultPopTransitionSpec<NavKey>().invoke(this)
 
-    override fun AnimatedContentTransitionScope<Scene<NavKey>>.onTransitionSpec(): ContentTransform {
-        // 直接调用 NavDisplay 暴露的默认入场动画
-        return defaultTransitionSpec<NavKey>().invoke(this)
-    }
+    override fun AnimatedContentTransitionScope<Scene<NavKey>>.onTransitionSpec(): ContentTransform =
+        defaultTransitionSpec<NavKey>().invoke(this)
 }

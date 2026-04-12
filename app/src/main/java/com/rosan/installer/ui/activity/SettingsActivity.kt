@@ -41,7 +41,6 @@ import androidx.navigation3.ui.NavDisplayTransitionEffects
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.NavigationEventState
 import androidx.navigationevent.compose.rememberNavigationEventState
-import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.rosan.installer.R
 import com.rosan.installer.domain.settings.model.PredictiveBackAnimation
 import com.rosan.installer.domain.settings.model.ThemeState
@@ -86,10 +85,9 @@ import com.rosan.installer.ui.page.miuix.settings.preferred.lab.MiuixLabPage
 import com.rosan.installer.ui.page.miuix.settings.preferred.theme.MiuixThemeSettingsPage
 import com.rosan.installer.ui.page.miuix.settings.preferred.uninstaller.MiuixUninstallerGlobalSettingsPage
 import com.rosan.installer.ui.theme.InstallerTheme
-import com.rosan.installer.ui.theme.rememberMiuixHazeStyle
+import com.rosan.installer.ui.theme.rememberMiuixBlurBackdrop
 import com.rosan.installer.ui.util.WindowLayoutType
 import com.rosan.installer.ui.util.calculateWindowLayoutType
-import dev.chrisbanes.haze.HazeState
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.component.KoinComponent
@@ -410,13 +408,12 @@ fun MiuixMainPageWrapper(uiState: ThemeState, layoutType: WindowLayoutType) {
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val hazeState = if (useBlur) remember { HazeState() } else null
-    val hazeStyle = rememberMiuixHazeStyle()
-    val surfaceColor = MiuixTheme.colorScheme.surface
-    val backdrop = rememberLayerBackdrop {
-        drawRect(surfaceColor)
-        drawContent()
-    }
+
+    // Remove Haze completely
+
+    // Create separated backdrops for different blurred components
+    val floatingBackdrop = com.kyant.backdrop.backdrops.rememberLayerBackdrop()
+    val miuixBackdrop = rememberMiuixBlurBackdrop(useBlur)
 
     // Branch statically without layout delay traps
     if (layoutType == WindowLayoutType.EXPANDED) {
@@ -426,9 +423,8 @@ fun MiuixMainPageWrapper(uiState: ThemeState, layoutType: WindowLayoutType) {
             snackbarHostState = snackbarHostState,
             useFloatingBottomBar = useFloatingBottomBar,
             useFloatingBottomBarBlur = useFloatingBottomBarBlur,
-            hazeState = hazeState,
-            hazeStyle = hazeStyle,
-            backdrop = backdrop
+            floatingBackdrop = floatingBackdrop,
+            miuixBackdrop = miuixBackdrop
         )
     } else {
         SettingsCompactLayout(
@@ -437,9 +433,8 @@ fun MiuixMainPageWrapper(uiState: ThemeState, layoutType: WindowLayoutType) {
             snackbarHostState = snackbarHostState,
             useFloatingBottomBar = useFloatingBottomBar,
             useFloatingBottomBarBlur = useFloatingBottomBarBlur,
-            hazeState = hazeState,
-            hazeStyle = hazeStyle,
-            backdrop = backdrop,
+            floatingBackdrop = floatingBackdrop,
+            miuixBackdrop = miuixBackdrop
         )
     }
 }

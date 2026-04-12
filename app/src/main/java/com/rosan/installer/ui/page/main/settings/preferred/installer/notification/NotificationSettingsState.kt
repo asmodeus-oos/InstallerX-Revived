@@ -3,6 +3,7 @@
 package com.rosan.installer.ui.page.main.settings.preferred.installer.notification
 
 data class NotificationSettingsState(
+    val useBlur: Boolean = true,
     val showLiveActivity: Boolean = false,
     val showMiIsland: Boolean = false,
     val miIslandBypassRestriction: Boolean = false,

@@ -14,7 +14,6 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.Scene
 import androidx.navigationevent.NavigationEventTransitionState
 
-// TODO Add an config page for user to select predictiveBack implement
 class KernelSUClassicPredictiveBackAnimation : PredictiveBackAnimationHandler {
     override suspend fun onBackPressed(
         transitionState: NavigationEventTransitionState?,

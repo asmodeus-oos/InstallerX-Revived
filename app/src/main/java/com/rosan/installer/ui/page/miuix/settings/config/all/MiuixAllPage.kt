@@ -50,8 +50,8 @@ import com.rosan.installer.ui.page.miuix.widgets.MiuixBadge
 import com.rosan.installer.ui.page.miuix.widgets.MiuixScopeTipCard
 import com.rosan.installer.ui.theme.getMiuixAppBarColor
 import com.rosan.installer.ui.theme.installerHazeEffect
+import com.rosan.installer.ui.theme.rememberMiuixBlurBackdrop
 import com.rosan.installer.ui.theme.rememberMiuixHazeStyle
-import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import kotlinx.coroutines.flow.collectLatest
@@ -80,7 +80,6 @@ import top.yukonga.miuix.kmp.utils.overScrollVertical
 fun MiuixAllPage(
     navigator: Navigator = LocalNavigator.current,
     viewModel: AllViewModel = koinViewModel { parametersOf(navigator) },
-    hazeState: HazeState?,
     title: String,
     outerPadding: PaddingValues,
     snackbarHostState: SnackbarHostState
@@ -118,6 +117,8 @@ fun MiuixAllPage(
 
     val layoutDirection = LocalLayoutDirection.current
     val horizontalSafeInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()
+
+    val topBarBackdrop = rememberMiuixBlurBackdrop(uiState.useBlur)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
