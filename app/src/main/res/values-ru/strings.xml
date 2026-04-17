@@ -756,4 +756,12 @@
     <string name="dialog_settings">Настройки диалогового окна</string>
     <string name="dialog_settings_desc">Настройте внешний вид и поведение диалоговых окон при установке</string>
     <string name="reboot_soft_reboot">Мягкая перезагрузка</string>
+    <string name="exception_install_failed_permission_model_downgrade">Понижение уровня разрешений не допускается</string>
+    <string name="exception_install_failed_sandbox_version_downgrade">Понижение версии в тестовой среде не допускается</string>
+    <string name="exception_install_failed_oem_frp_locked">Пожалуйста, войдите в исходный аккаунт Google</string>
+    <string name="exception_install_parse_failed_manifest_empty">В манифесте отсутствуют теги application или instrumentation</string>
+    <string name="exception_install_failed_duplicate_permission_group">Группа разрешений уже определена другим пакетом</string>
+    <string name="exception_install_failed_bad_permission_group">Недопустимая группа разрешений или несовместимый сертификат</string>
+    <string name="exception_install_failed_pre_approval_not_available">Запрос предварительного одобрения пользователя в настоящее время недоступен</string>
+    <string name="exception_install_failed_multi_arch_not_match_all_native_abis">Нативный код пакета не соответствует всем поддерживаемым системой ABI</string>
 </resources>
