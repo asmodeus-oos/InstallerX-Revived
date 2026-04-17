@@ -41,24 +41,23 @@ jobs:
           build-scan-publish: false
           cache-read-only: true
 
-      # ✅ No more hard failure
-      - name: Verify Keystore (optional)
+      - name: Verify Keystore
         run: |
           if [ -z "${{ secrets.SIGNING_KEY_STORE_BASE64 }}" ]; then
-            echo "WARNING: SIGNING_KEY_STORE_BASE64 not set → building unsigned APK"
-          else
-            echo "Signing keystore detected"
+            echo "ERROR: SIGNING_KEY_STORE_BASE64 secret is missing"
+            exit 1
           fi
 
-      # ✅ Only runs if secrets exist
       - name: Setup Signing Keys
-        if: ${{ secrets.SIGNING_KEY_STORE_BASE64 != '' }}
         env:
           SIGNING_KEY_STORE_BASE64: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
         run: |
+          if [ -z "${SIGNING_STORE_PASSWORD:-}" ] || [ -z "${SIGNING_KEY_STORE_BASE64:-}" ] || [ -z "${SIGNING_KEY_PASSWORD:-}" ] || [ -z "${SIGNING_KEY_ALIAS:-}" ]; then
+            exit 0
+          fi
           mkdir -p keystore
           echo "${SIGNING_KEY_STORE_BASE64}" | base64 --decode > keystore/carlyu.jks
           echo "storeFile=keystore/carlyu.jks" > keystore.properties
